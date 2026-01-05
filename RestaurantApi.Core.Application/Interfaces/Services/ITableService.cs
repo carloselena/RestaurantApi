@@ -5,5 +5,6 @@ namespace RestaurantApi.Core.Application.Interfaces.Services
 {
     public interface ITableService : IGenericService<TableDTO, AddTableDTO, UpdateTableDTO, Table>
     {
+        Task<ChangeTableStatusDTO> ChangeStatus(int id, ChangeTableStatusDTO tableStatusDTO);
     }
 }

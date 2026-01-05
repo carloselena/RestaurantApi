@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using RestaurantApi.Core.Application.DTOs.Table;
 using RestaurantApi.Core.Application.Interfaces.Repositories;
+using RestaurantApi.Core.Application.Interfaces.Services;
 using RestaurantApi.Core.Domain.Entities;
 
 namespace RestaurantApi.Core.Application.Services
 {
-    public class TableService : GenericService<TableDTO, AddTableDTO, UpdateTableDTO, Table>
+    public class TableService : GenericService<TableDTO, AddTableDTO, UpdateTableDTO, Table>, ITableService
     {
         private readonly ITableRepository _tableRepository;
         private readonly IMapper _mapper;
@@ -14,6 +15,17 @@ namespace RestaurantApi.Core.Application.Services
         {
             _tableRepository = tableRepository;
             _mapper = mapper;
+        }
+
+        public async Task<ChangeTableStatusDTO> ChangeStatus(int id, ChangeTableStatusDTO tableStatusDTO)
+        {
+            Table table = await _tableRepository.GetByIdAsync(id);
+            if (table == null)
+                throw new KeyNotFoundException();
+
+            _mapper.Map(tableStatusDTO, table);
+            await _tableRepository.UpdateAsync(table);
+            return tableStatusDTO;
         }
     }
 }
