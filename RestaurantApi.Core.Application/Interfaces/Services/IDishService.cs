@@ -5,5 +5,7 @@ namespace RestaurantApi.Core.Application.Interfaces.Services
 {
     public interface IDishService : IGenericService<DishDTO, AddDishDTO, UpdateDishDTO, Dish>
     {
+        Task ValidateIngredients(List<int> ingredientsIds);
+        void SyncIngredients(Dish dish, List<int> newIngredientsIds);
     }
 }
