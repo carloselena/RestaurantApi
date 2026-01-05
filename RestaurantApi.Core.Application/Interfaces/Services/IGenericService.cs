@@ -2,16 +2,16 @@
 
 namespace RestaurantApi.Core.Application.Interfaces.Services
 {
-    public interface IGenericService<Dto, AddDto, UpdateDto, Entity>
-        where Dto : class
-        where AddDto : class
-        where UpdateDto : class
+    public interface IGenericService<DTO, AddDTO, UpdateDTO, Entity>
+        where DTO : class
+        where AddDTO : class
+        where UpdateDTO : class
         where Entity : BaseEntity
     {
-        Task<AddDto> Add(AddDto addDto);
-        Task<UpdateDto> Update(int id, UpdateDto updateDto, Func<IQueryable<Entity>, IQueryable<Entity>>? includes = null);
-        Task<ICollection<Dto>> GetAll(Func<IQueryable<Entity>, IQueryable<Entity>>? includes = null);
-        Task<Dto> GetById(int id, Func<IQueryable<Entity>, IQueryable<Entity>>? includes = null);
+        Task<AddDTO> Add(AddDTO addDTO);
+        Task<UpdateDTO> Update(int id, UpdateDTO updateDTO, Func<IQueryable<Entity>, IQueryable<Entity>>? includes = null);
+        Task<ICollection<DTO>> GetAll(Func<IQueryable<Entity>, IQueryable<Entity>>? includes = null);
+        Task<DTO> GetById(int id, Func<IQueryable<Entity>, IQueryable<Entity>>? includes = null);
         Task Delete(int id);
     }
 }
