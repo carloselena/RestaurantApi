@@ -8,7 +8,8 @@
     <Project Path="RestaurantApi.Infrastructure.Persistence/RestaurantApi.Infrastructure.Persistence.csproj" />
     <Project Path="RestaurantApi.Infrastructure.Shared/RestaurantApi.Infrastructure.Shared.csproj" Id="61f12e3f-e48d-4fd9-a33c-55931e78501f" />
   </Folder>
-  <Folder Name="/Source/Presentation/">
+  <Folder Name="/Source/Presentation/" />
+  <Folder Name="/Source/Presentation/WebApi/">
     <Project Path="RestaurantApi/RestaurantApi.csproj" />
   </Folder>
 </Solution>
