@@ -26,6 +26,7 @@ namespace RestaurantApi.Extensions
                 });
 
                 opt.DescribeAllParametersInCamelCase();
+                opt.EnableAnnotations();
             });
         }
 
