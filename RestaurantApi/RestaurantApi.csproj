@@ -23,4 +23,8 @@
     <ProjectReference Include="..\RestaurantApi.Infrastructure.Persistence\RestaurantApi.Infrastructure.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>
