@@ -1,7 +1,12 @@
 <Solution>
   <Folder Name="/Source/" />
-  <Folder Name="/Source/Core/" />
-  <Folder Name="/Source/Infrastructure/" />
+  <Folder Name="/Source/Core/">
+    <Project Path="RestaurantApi.Core.Application/RestaurantApi.Core.Application.csproj" />
+    <Project Path="RestaurantApi.Core.Domain/RestaurantApi.Core.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Source/Infrastructure/">
+    <Project Path="RestaurantApi.Infrastructure.Persistence/RestaurantApi.Infrastructure.Persistence.csproj" />
+  </Folder>
   <Folder Name="/Source/Presentation/">
     <Project Path="RestaurantApi/RestaurantApi.csproj" />
   </Folder>
