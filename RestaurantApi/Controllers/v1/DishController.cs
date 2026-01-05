@@ -49,6 +49,9 @@ namespace RestaurantApi.Controllers.v1
         )]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
+            if (id <= 0)
+                return BadRequest();
+
             var dish = await _dishService.GetById(id, q => q.Include(d => d.Ingredients)
                                                          .ThenInclude(di => di.Ingredient));
 
