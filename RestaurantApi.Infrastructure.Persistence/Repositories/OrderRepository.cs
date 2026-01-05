@@ -14,6 +14,15 @@ namespace RestaurantApi.Infrastructure.Persistence.Repositories
             _dbContext = dbContext;
         }
 
+        public override async Task<Order> UpdateAsync(Order order)
+        {
+            var orderDB = await _dbContext.Orders.Include(o => o.Dishes).FirstOrDefaultAsync(o => o.Id == order.Id);
+            _dbContext.Entry(orderDB).CurrentValues.SetValues(order);
+            orderDB.Dishes = order.Dishes;
+            await _dbContext.SaveChangesAsync();
+            return order;
+        }
+
         public async Task<ICollection<Order>> GetAllTableOrdersAsync(int tableId)
         {
             return await _dbContext.Orders.Include(o => o.Dishes)
