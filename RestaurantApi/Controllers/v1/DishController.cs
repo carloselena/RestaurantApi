@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestaurantApi.Core.Application.DTOs.Dish;
-using RestaurantApi.Core.Application.DTOs.Ingredient;
 using RestaurantApi.Core.Application.Interfaces.Services;
-using RestaurantApi.Core.Application.Services;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Mime;
 
 namespace RestaurantApi.Controllers.v1
 {
+    [ApiVersion("1.0")]
+    [SwaggerTag("Mantenimiento de platos")]
     public class DishController : BaseApiController
     {
         private readonly IDishService _dishService;
