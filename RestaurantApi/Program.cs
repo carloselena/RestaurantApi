@@ -37,6 +37,8 @@ builder.Services.AddValidatorsFromAssemblyContaining<SaveIngredientDTO>();
 
 var app = builder.Build();
 
+await app.RunIdentitySeeds();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
