@@ -1,11 +1,7 @@
 ﻿using Asp.Versioning;
-using Azure;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
-using RestaurantApi.Core.Application.DTOs.Ingredient;
 using RestaurantApi.Core.Application.DTOs.Table;
 using RestaurantApi.Core.Application.Interfaces.Services;
-using RestaurantApi.Core.Application.Services;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Mime;
 
