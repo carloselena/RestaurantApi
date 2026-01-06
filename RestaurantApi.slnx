@@ -5,6 +5,7 @@
     <Project Path="RestaurantApi.Core.Domain/RestaurantApi.Core.Domain.csproj" />
   </Folder>
   <Folder Name="/Source/Infrastructure/">
+    <Project Path="RestaurantApi.Infrastructure.Identity/RestaurantApi.Infrastructure.Identity.csproj" />
     <Project Path="RestaurantApi.Infrastructure.Persistence/RestaurantApi.Infrastructure.Persistence.csproj" />
     <Project Path="RestaurantApi.Infrastructure.Shared/RestaurantApi.Infrastructure.Shared.csproj" Id="61f12e3f-e48d-4fd9-a33c-55931e78501f" />
   </Folder>
