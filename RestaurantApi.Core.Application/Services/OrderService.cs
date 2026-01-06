@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using RestaurantApi.Core.Application.DTOs.Order;
+using RestaurantApi.Core.Application.Enums;
 using RestaurantApi.Core.Application.Interfaces.Repositories;
 using RestaurantApi.Core.Application.Interfaces.Services;
 using RestaurantApi.Core.Domain.Entities;
@@ -11,17 +12,20 @@ namespace RestaurantApi.Core.Application.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IDishRepository _dishRepository;
+        private readonly ITableRepository _tableRepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository orderRepository, IDishRepository dishRepository, IMapper mapper) : base(orderRepository, mapper)
+        public OrderService(IOrderRepository orderRepository, IDishRepository dishRepository, ITableRepository tableRepository, IMapper mapper) : base(orderRepository, mapper)
         {
             _orderRepository = orderRepository;
             _dishRepository = dishRepository;
+            _tableRepository = tableRepository;
             _mapper = mapper;
         }
 
         public override async Task<AddOrderDTO> Add(AddOrderDTO orderDTO)
         {
+            await ValidateTable(orderDTO.TableId);
             await ValidateDishes(orderDTO.DishesIds);
 
             return await base.Add(orderDTO);
@@ -43,15 +47,15 @@ namespace RestaurantApi.Core.Application.Services
             return _mapper.Map<UpdateOrderDTO>(order);
         }
 
-        public async Task<ChangeOrderStatusDTO> ChangeStatus(int id, ChangeOrderStatusDTO orderStatusDTO)
+        public async Task ChangeStatus(int id)
         {
-            Order order = await _orderRepository.GetByIdAsync(id);
+            Order order = await _orderRepository.GetByIdAsync(id, q => q.Include(o => o.Dishes)
+                                                                        .ThenInclude(od => od.Dish));
             if (order == null)
                 throw new KeyNotFoundException($"No hay orden con id {id}");
 
-            _mapper.Map(orderStatusDTO, order);
+            order.Status = OrderStatus.COMPLETADA.ToString();
             await _orderRepository.UpdateAsync(order);
-            return orderStatusDTO;
         }
 
         public async Task<TableOrdersDTO> GetAllTableOrders(int tableId)
@@ -68,13 +72,19 @@ namespace RestaurantApi.Core.Application.Services
             return tableOrders;
         }
 
+        private async Task ValidateTable(int tableId)
+        {
+            var table = await _tableRepository.GetByIdAsync(tableId);
+            if (table == null)
+                throw new KeyNotFoundException("Debe asegurarse de que la mesa exista");
+        }
         private async Task ValidateDishes(List<int> dishesIds)
         {
             var dishesDB = await _dishRepository.GetAllAsync();
             dishesDB = dishesDB.Where(d => dishesIds.Contains(d.Id)).ToList();
 
             if (dishesDB.Count != dishesIds.Count)
-                throw new Exception("Debe asegurarse de que los platos existan");
+                throw new KeyNotFoundException("Debe asegurarse de que los platos existan");
         }
 
         private static void SyncDishes(Order order, List<int> newDishesIds)
