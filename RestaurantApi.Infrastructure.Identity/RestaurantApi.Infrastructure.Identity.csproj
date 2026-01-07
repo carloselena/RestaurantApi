@@ -25,8 +25,4 @@
     <ProjectReference Include="..\RestaurantApi.Core.Application\RestaurantApi.Core.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>
