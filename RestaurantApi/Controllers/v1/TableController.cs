@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RestaurantApi.Core.Application.DTOs.Order;
 using RestaurantApi.Core.Application.DTOs.Table;
 using RestaurantApi.Core.Application.Enums;
 using RestaurantApi.Core.Application.Interfaces.Services;
@@ -14,10 +15,12 @@ namespace RestaurantApi.Controllers.v1
     public class TableController : BaseApiController
     {
         private readonly ITableService _tableService;
+        private readonly IOrderService _orderService;
 
-        public TableController(ITableService tableService)
+        public TableController(ITableService tableService, IOrderService orderService)
         {
             _tableService = tableService;
+            _orderService = orderService;
         }
 
         [Authorize(Roles = $"{nameof(Roles.ADMIN)}, {nameof(Roles.MESERO)}")]
@@ -122,6 +125,36 @@ namespace RestaurantApi.Controllers.v1
             {
                 await _tableService.ChangeStatus(id, tableStatusDTO);
                 return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+
+        [Authorize(Roles = nameof(Roles.MESERO))]
+        [HttpGet("{tableId}/orders")]
+        [ProducesResponseType(typeof(TableOrdersDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(
+            Summary = "Buscar órdenes de una mesa",
+            Description = "Recibe el id de la mesa y devuelve un objeto con el id de la mesa y el listado de sus órdenes pendientes"
+        )]
+        public async Task<IActionResult> GetTableOrders([FromRoute] int tableId)
+        {
+            if (tableId <= 0)
+                return BadRequest();
+
+            try
+            {
+                var tableOrders = await _orderService.GetAllTableOrders(tableId);
+                if (tableOrders.Orders == null || tableOrders.Orders.Count == 0)
+                    return NoContent();
+
+                return Ok(tableOrders);
             }
             catch (KeyNotFoundException)
             {
