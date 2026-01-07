@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantApi.Core.Application.DTOs.Account;
 using RestaurantApi.Core.Application.Enums;
@@ -35,13 +36,14 @@ namespace RestaurantApi.Controllers
             Summary = "Registrar un nuevo usuario MESERO",
             Description = "Crea una nueva cuenta de usuario con los datos proporcionados + rol MESERO y envía un correo de confirmación para validar la dirección de email antes de permitir el acceso al sistema"
         )]
-        public async Task<IActionResult> RegisterMesero([FromBody] RegisterRequest request)
+        public async Task<IActionResult> RegisterWaiter([FromBody] RegisterRequest request)
         {
             var origin = Request.Headers.Origin;
             request.Role = Roles.MESERO;
             return Ok(await _accountService.RegisterAsync(request, origin!));
         }
-        
+
+        [Authorize(Roles = nameof(Roles.ADMIN))]
         [HttpPost("register-admin")]
         [SwaggerOperation(
             Summary = "Registrar un nuevo usuario ADMIN",
