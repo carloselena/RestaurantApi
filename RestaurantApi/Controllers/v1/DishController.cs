@@ -1,13 +1,16 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestaurantApi.Core.Application.DTOs.Dish;
+using RestaurantApi.Core.Application.Enums;
 using RestaurantApi.Core.Application.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Mime;
 
 namespace RestaurantApi.Controllers.v1
 {
+    [Authorize(Roles = nameof(Roles.ADMIN))]
     [ApiVersion("1.0")]
     [SwaggerTag("Mantenimiento de platos")]
     public class DishController : BaseApiController
@@ -68,7 +71,7 @@ namespace RestaurantApi.Controllers.v1
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(
             Summary = "Creación de plato",
-            Description = "Recibe las propiedades necesarias para crear un plato"
+            Description = "Recibe las propiedades necesarias para crear un plato. La categoría del plato solo puede ser ENTRADA, PLATO_FUERTE, POSTRE o BEBIDA"
         )]
         public async Task<IActionResult> Create([FromBody] AddDishDTO addDishDTO)
         {

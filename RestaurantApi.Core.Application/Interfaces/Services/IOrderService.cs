@@ -5,7 +5,7 @@ namespace RestaurantApi.Core.Application.Interfaces.Services
 {
     public interface IOrderService : IGenericService<OrderDTO, AddOrderDTO, UpdateOrderDTO, Order>
     {
-        Task<ChangeOrderStatusDTO> ChangeStatus(int id, ChangeOrderStatusDTO orderStatusDTO);
+        Task ChangeStatus(int id);
         Task<TableOrdersDTO> GetAllTableOrders(int tableId);
     }
 }

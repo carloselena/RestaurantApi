@@ -4,6 +4,8 @@ using RestaurantApi.Core.Application;
 using RestaurantApi.Core.Application.DTOs.Ingredient;
 using RestaurantApi.Extensions;
 using RestaurantApi.Infrastructure.Persistence;
+using RestaurantApi.Infrastructure.Identity;
+using RestaurantApi.Infrastructure.Shared;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +27,8 @@ builder.Services.AddSwaggerExtension();
 builder.Services.AddApiVersioningExtension();
 
 builder.Services.AddPersistenceInfrastructure(builder.Configuration);
+builder.Services.AddIdentityInfrastructure(builder.Configuration, builder.Environment);
+builder.Services.AddSharedInfrastructure(builder.Configuration);
 builder.Services.AddApplicationLayer();
 
 builder.Services.AddFluentValidationAutoValidation();
@@ -34,6 +38,8 @@ builder.Services.AddValidatorsFromAssemblyContaining<SaveIngredientDTO>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 var app = builder.Build();
+
+await app.RunIdentitySeeds();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

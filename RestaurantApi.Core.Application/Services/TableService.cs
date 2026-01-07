@@ -17,7 +17,7 @@ namespace RestaurantApi.Core.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<ChangeTableStatusDTO> ChangeStatus(int id, ChangeTableStatusDTO tableStatusDTO)
+        public async Task ChangeStatus(int id, ChangeTableStatusDTO tableStatusDTO)
         {
             Table table = await _tableRepository.GetByIdAsync(id);
             if (table == null)
@@ -25,7 +25,6 @@ namespace RestaurantApi.Core.Application.Services
 
             _mapper.Map(tableStatusDTO, table);
             await _tableRepository.UpdateAsync(table);
-            return tableStatusDTO;
         }
     }
 }
