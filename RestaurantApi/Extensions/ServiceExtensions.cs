@@ -25,8 +25,33 @@ namespace RestaurantApi.Extensions
                     }
                 });
 
-                opt.DescribeAllParametersInCamelCase();
                 opt.EnableAnnotations();
+                opt.DescribeAllParametersInCamelCase();
+                opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    Description = "Introduzca su Bearer token en este formato: Bearer {su token aquí}"
+                });
+                opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "Bearer",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header
+                        }, new List<string>()
+                    }
+                });
             });
         }
 
