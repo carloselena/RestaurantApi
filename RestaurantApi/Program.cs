@@ -5,6 +5,7 @@ using RestaurantApi.Core.Application.DTOs.Ingredient;
 using RestaurantApi.Extensions;
 using RestaurantApi.Infrastructure.Persistence;
 using RestaurantApi.Infrastructure.Identity;
+using RestaurantApi.Infrastructure.Shared;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,7 +27,8 @@ builder.Services.AddSwaggerExtension();
 builder.Services.AddApiVersioningExtension();
 
 builder.Services.AddPersistenceInfrastructure(builder.Configuration);
-builder.Services.AddIdentityInfrastructure(builder.Configuration);
+builder.Services.AddIdentityInfrastructure(builder.Configuration, builder.Environment);
+builder.Services.AddSharedInfrastructure(builder.Configuration);
 builder.Services.AddApplicationLayer();
 
 builder.Services.AddFluentValidationAutoValidation();
