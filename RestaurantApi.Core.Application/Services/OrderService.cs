@@ -60,6 +60,8 @@ namespace RestaurantApi.Core.Application.Services
 
         public async Task<TableOrdersDTO> GetAllTableOrders(int tableId)
         {
+            await ValidateTable(tableId);
+
             TableOrdersDTO tableOrders = new()
             {
                 TableId = tableId
@@ -67,7 +69,7 @@ namespace RestaurantApi.Core.Application.Services
 
             var orders = await _orderRepository.GetAllTableOrdersAsync(tableId);
             if (orders != null && orders.Count > 0)
-                tableOrders.Orders = _mapper.Map<List<OrderDTO>>(orders);
+                tableOrders.Orders = _mapper.Map<List<OrderDTO>>(orders.Where(o => o.Status == "EN_PROCESO"));
 
             return tableOrders;
         }
