@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RestaurantApi.Infrastructure.Identity\RestaurantApi.Infrastructure.Identity.csproj" />
     <ProjectReference Include="..\RestaurantApi.Infrastructure.Persistence\RestaurantApi.Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\RestaurantApi.Infrastructure.Shared\RestaurantApi.Infrastructure.Shared.csproj" />
   </ItemGroup>
 
 </Project>
