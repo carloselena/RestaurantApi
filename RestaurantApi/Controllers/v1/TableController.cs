@@ -1,6 +1,8 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantApi.Core.Application.DTOs.Table;
+using RestaurantApi.Core.Application.Enums;
 using RestaurantApi.Core.Application.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Mime;
@@ -18,6 +20,7 @@ namespace RestaurantApi.Controllers.v1
             _tableService = tableService;
         }
 
+        [Authorize(Roles = $"{nameof(Roles.ADMIN)}, {nameof(Roles.MESERO)}")]
         [HttpGet]
         [ProducesResponseType(typeof(TableDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -35,6 +38,7 @@ namespace RestaurantApi.Controllers.v1
             return Ok(tables);
         }
 
+        [Authorize(Roles = $"{nameof(Roles.ADMIN)}, {nameof(Roles.MESERO)}")]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(TableDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -56,6 +60,7 @@ namespace RestaurantApi.Controllers.v1
             return Ok(table);
         }
 
+        [Authorize(Roles = nameof(Roles.ADMIN))]
         [HttpPost]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(AddTableDTO), StatusCodes.Status201Created)]
@@ -71,6 +76,7 @@ namespace RestaurantApi.Controllers.v1
             return StatusCode(StatusCodes.Status201Created, result);
         }
 
+        [Authorize(Roles = nameof(Roles.ADMIN))]
         [HttpPut("{id}")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(UpdateTableDTO), StatusCodes.Status200OK)]
@@ -96,6 +102,7 @@ namespace RestaurantApi.Controllers.v1
             }
         }
 
+        [Authorize(Roles = nameof(Roles.MESERO))]
         [HttpPatch("{id}/status")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
