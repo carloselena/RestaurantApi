@@ -4,6 +4,10 @@ using RestaurantApi.Core.Application.DTOs.Ingredient;
 using RestaurantApi.Core.Application.DTOs.Order;
 using RestaurantApi.Core.Application.DTOs.Table;
 using RestaurantApi.Core.Application.Enums;
+using RestaurantApi.Core.Application.Features.Ingredients.Commands;
+using RestaurantApi.Core.Application.Features.Ingredients.Commands.CreateIngredient;
+using RestaurantApi.Core.Application.Features.Ingredients.Commands.UpdateIngredient;
+using RestaurantApi.Core.Application.Features.Ingredients.Queries;
 using RestaurantApi.Core.Domain.Entities;
 
 namespace RestaurantApi.Core.Application.Mappings
@@ -12,6 +16,8 @@ namespace RestaurantApi.Core.Application.Mappings
     {
         public GeneralProfile()
         {
+            #region Services
+
             #region Ingredient
             CreateMap<Ingredient, IngredientDTO>();
 
@@ -69,6 +75,21 @@ namespace RestaurantApi.Core.Application.Mappings
                 .ForMember(dto => dto.DishesIds, opt => opt.MapFrom(src => src.Dishes.Select(od => od.DishId)))
                 .ReverseMap();
             #endregion
+            #endregion
+
+            #region CQRS
+
+            #region Ingredient
+            CreateMap<CreateIngredientCommand, Ingredient>();
+
+            CreateMap<UpdateIngredientCommand, Ingredient>();
+
+            CreateMap<Ingredient, SaveIngredientResponse>();
+
+            CreateMap<Ingredient, IngredientDto>();
+            #endregion
+            #endregion
+
         }
     }
 }
