@@ -1,12 +1,12 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using RestaurantApi.Core.Application;
-using RestaurantApi.Core.Application.DTOs.Ingredient;
 using RestaurantApi.Extensions;
 using RestaurantApi.Infrastructure.Persistence;
 using RestaurantApi.Infrastructure.Identity;
 using RestaurantApi.Infrastructure.Shared;
 using System.Text.Json.Serialization;
+using RestaurantApi.Core.Application.Features.Ingredients.Commands.CreateIngredient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +33,7 @@ builder.Services.AddApplicationLayer();
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
-builder.Services.AddValidatorsFromAssemblyContaining<SaveIngredientDTO>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateIngredientCommandValidator>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
