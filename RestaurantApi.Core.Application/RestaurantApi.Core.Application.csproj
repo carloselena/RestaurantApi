@@ -17,8 +17,4 @@
     <ProjectReference Include="..\RestaurantApi.Core.Domain\RestaurantApi.Core.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Ingredients\Queries\GetIngredientById\" />
-  </ItemGroup>
-
 </Project>
