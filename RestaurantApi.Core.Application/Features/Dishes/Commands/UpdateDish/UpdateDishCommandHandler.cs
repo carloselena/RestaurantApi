@@ -1,17 +1,16 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RestaurantApi.Core.Application.Interfaces.Repositories;
 using RestaurantApi.Core.Application.Wrappers;
 
 namespace RestaurantApi.Core.Application.Features.Dishes.Commands.UpdateDish
 {
-    public class UpdateDishHandler : IRequestHandler<UpdateDishCommand, Response<int>>
+    public class UpdateDishCommandHandler : IRequestHandler<UpdateDishCommand, Response<int>>
     {
         private readonly IDishRepository _dishRepository;
         private readonly IIngredientRepository _ingredientRepository;
 
-        public UpdateDishHandler(IDishRepository dishRepository, 
+        public UpdateDishCommandHandler(IDishRepository dishRepository, 
                                  IIngredientRepository ingredientRepository)
         {
             _dishRepository = dishRepository;
