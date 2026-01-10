@@ -4,6 +4,8 @@ using RestaurantApi.Core.Application.DTOs.Ingredient;
 using RestaurantApi.Core.Application.DTOs.Order;
 using RestaurantApi.Core.Application.DTOs.Table;
 using RestaurantApi.Core.Application.Enums;
+using RestaurantApi.Core.Application.Features.Dishes.Commands.CreateDish;
+using RestaurantApi.Core.Application.Features.Dishes.Queries;
 using RestaurantApi.Core.Application.Features.Ingredients.Commands;
 using RestaurantApi.Core.Application.Features.Ingredients.Commands.CreateIngredient;
 using RestaurantApi.Core.Application.Features.Ingredients.Commands.UpdateIngredient;
@@ -87,6 +89,21 @@ namespace RestaurantApi.Core.Application.Mappings
             CreateMap<Ingredient, SaveIngredientResponse>();
 
             CreateMap<Ingredient, IngredientDto>();
+            #endregion
+
+            #region Dish
+            CreateMap<CreateDishCommand, Dish>()
+                .ForMember(d => d.Category, opt => opt.MapFrom(cmd => cmd.Category.ToString()))
+                .ForMember(d => d.MaxPeopleQuantity, opt => opt.MapFrom(cmd => cmd.EnoughFor))
+                .ForMember(d => d.Ingredients,
+                           opt => opt.MapFrom(cmd =>
+                           cmd.IngredientsIds.Select(id =>
+                           new DishIngredients { IngredientId = id })));
+
+            CreateMap<Dish, DishDto>()
+                .ForMember(dto => dto.Category, opt => opt.MapFrom(src => Enum.Parse<DishCategories>(src.Category)))
+                .ForMember(dto => dto.EnoughFor, opt => opt.MapFrom(src => src.MaxPeopleQuantity))
+                .ForMember(dto => dto.Ingredients, opt => opt.MapFrom(src => src.Ingredients.Select(di => di.Ingredient)));
             #endregion
             #endregion
 
