@@ -10,6 +10,7 @@ namespace RestaurantApi.Core.Application
         public static void AddApplicationLayer(this IServiceCollection services)
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
 
             #region Services
             services.AddTransient(typeof(IGenericService<,,,>), typeof(GenericService<,,,>));
