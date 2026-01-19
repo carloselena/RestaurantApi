@@ -4,6 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using RestaurantApi.Core.Application.DTOs.Order;
 using RestaurantApi.Core.Application.DTOs.Table;
 using RestaurantApi.Core.Application.Enums;
+using RestaurantApi.Core.Application.Features.Tables.Commands.ChangeTableStatus;
+using RestaurantApi.Core.Application.Features.Tables.Commands.CreateTable;
+using RestaurantApi.Core.Application.Features.Tables.Commands.UpdateTable;
+using RestaurantApi.Core.Application.Features.Tables.Queries.GetAllTables;
+using RestaurantApi.Core.Application.Features.Tables.Queries.GetTableById;
 using RestaurantApi.Core.Application.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Mime;
@@ -34,11 +39,11 @@ namespace RestaurantApi.Controllers.v1
         )]
         public async Task<IActionResult> Get()
         {
-            var tables = await _tableService.GetAll();
-            if (tables == null || tables.Count == 0)
+            var response = await Mediator.Send(new GetAllTablesQuery());
+            if (!response.Succeeded)
                 return NoContent();
 
-            return Ok(tables);
+            return Ok(response.Data);
         }
 
         [Authorize(Roles = $"{nameof(Roles.ADMIN)}, {nameof(Roles.MESERO)}")]
@@ -51,16 +56,13 @@ namespace RestaurantApi.Controllers.v1
             Summary = "Buscar mesa",
             Description = "Obtiene la mesa cuyo id corresponda al id enviado"
         )]
-        public async Task<IActionResult> Get([FromRoute] int id)
+        public async Task<IActionResult> Get([FromRoute] GetTableByIdQuery query)
         {
-            if (id <= 0)
-                return BadRequest();
-
-            var table = await _tableService.GetById(id);
-            if (table == null)
+            var response = await Mediator.Send(query);
+            if (!response.Succeeded)
                 return NotFound();
 
-            return Ok(table);
+            return Ok(response.Data);
         }
 
         [Authorize(Roles = nameof(Roles.ADMIN))]
@@ -73,14 +75,14 @@ namespace RestaurantApi.Controllers.v1
             Summary = "Creación de mesa",
             Description = "Recibe las propiedades necesarias para crear una mesa, las mesas se crean con estado DISPONIBLE"
         )]
-        public async Task<IActionResult> Create([FromBody] AddTableDTO addTableDTO)
+        public async Task<IActionResult> Create([FromBody] CreateTableCommand command)
         {
-            var result = await _tableService.Add(addTableDTO);
-            return StatusCode(StatusCodes.Status201Created, result);
+            var response = await Mediator.Send(command);
+            return StatusCode(StatusCodes.Status201Created, response.Data);
         }
 
         [Authorize(Roles = nameof(Roles.ADMIN))]
-        [HttpPut("{id}")]
+        [HttpPut]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(UpdateTableDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -90,19 +92,13 @@ namespace RestaurantApi.Controllers.v1
             Summary = "Actualización de mesa",
             Description = "Recibe las propiedades necesarias para actualizar un ingrediente, solo se puede actualizar la descripción y la cantidad de personas para la que alcanza la mesa"
         )]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateTableDTO updateTableDTO)
+        public async Task<IActionResult> Update([FromBody] UpdateTableCommand command)
         {
-            if (id <= 0)
-                return BadRequest();
-
-            try
-            {
-                return Ok(await _tableService.Update(id, updateTableDTO));
-            }
-            catch (KeyNotFoundException)
-            {
+            var response = await Mediator.Send(command);
+            if (!response.Succeeded)
                 return NotFound();
-            }
+
+            return Ok(response.Data);
         }
 
         [Authorize(Roles = nameof(Roles.MESERO))]
@@ -116,20 +112,15 @@ namespace RestaurantApi.Controllers.v1
             Summary = "Cambiar estado de una mesa",
             Description = "Recibe el nuevo estado de la mesa y lo actualiza a este, los estados solo pueden ser DISPONIBLE, EN_PROCESO o ATENDIDA"
         )]
-        public async Task<IActionResult> ChangeStatus([FromRoute] int id, [FromBody] ChangeTableStatusDTO tableStatusDTO)
+        public async Task<IActionResult> ChangeStatus([FromRoute] int id,
+            [FromBody] ChangeTableStatusCommand command)
         {
-            if (id <= 0)
-                return BadRequest();
-
-            try
-            {
-                await _tableService.ChangeStatus(id, tableStatusDTO);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
+            command.Id = id;
+            var response = await Mediator.Send(command);
+            if (!response.Succeeded)
                 return NotFound();
-            }
+
+            return Ok(response.Data);
         }
 
         [Authorize(Roles = nameof(Roles.MESERO))]

@@ -10,6 +10,10 @@ using RestaurantApi.Core.Application.Features.Ingredients.Commands;
 using RestaurantApi.Core.Application.Features.Ingredients.Commands.CreateIngredient;
 using RestaurantApi.Core.Application.Features.Ingredients.Commands.UpdateIngredient;
 using RestaurantApi.Core.Application.Features.Ingredients.Queries;
+using RestaurantApi.Core.Application.Features.Tables.Commands.ChangeTableStatus;
+using RestaurantApi.Core.Application.Features.Tables.Commands.CreateTable;
+using RestaurantApi.Core.Application.Features.Tables.Commands.UpdateTable;
+using RestaurantApi.Core.Application.Features.Tables.Queries;
 using RestaurantApi.Core.Domain.Entities;
 
 namespace RestaurantApi.Core.Application.Mappings
@@ -104,6 +108,18 @@ namespace RestaurantApi.Core.Application.Mappings
                 .ForMember(dto => dto.Category, opt => opt.MapFrom(src => Enum.Parse<DishCategories>(src.Category)))
                 .ForMember(dto => dto.EnoughFor, opt => opt.MapFrom(src => src.MaxPeopleQuantity))
                 .ForMember(dto => dto.Ingredients, opt => opt.MapFrom(src => src.Ingredients.Select(di => di.Ingredient)));
+            #endregion
+
+            #region Table
+            CreateMap<CreateTableCommand, Table>()
+                .ForMember(t => t.Status, opt => opt.MapFrom(cmd => cmd.Status.ToString()));
+
+            CreateMap<UpdateTableCommand, Table>();
+
+            CreateMap<ChangeTableStatusCommand, Table>();
+
+            CreateMap<Table, TableDto>()
+                .ForMember(dto => dto.Status, opt => opt.MapFrom(src => Enum.Parse<TableStatus>(src.Status)));
             #endregion
             #endregion
 
