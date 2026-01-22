@@ -7,10 +7,6 @@ namespace RestaurantApi.Core.Application.Features.Dishes.Commands.UpdateDish
     {
         public UpdateDishCommandValidator()
         {
-            RuleFor(d => d.Id)
-                .GreaterThan(0)
-                .WithMessage("El Id debe ser mayor a 0");
-
             RuleFor(d => d.Price)
                 .GreaterThan(0).WithMessage("El precio debe ser mayor a 0");
 
