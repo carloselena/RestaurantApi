@@ -5,10 +5,8 @@ using System.Text.Json.Serialization;
 
 namespace RestaurantApi.Core.Application.Features.Tables.Commands.ChangeTableStatus
 {
-    public class ChangeTableStatusCommand : IRequest<Response<int>>
-    {
-        [JsonIgnore]
-        public int Id { get; set; }
-        public TableStatus Status { get; set; }
-    }
+    public record ChangeTableStatusCommand(
+        [property: JsonIgnore] int Id,
+        TableStatus Status
+    ) : IRequest<Response<int>>;
 }
