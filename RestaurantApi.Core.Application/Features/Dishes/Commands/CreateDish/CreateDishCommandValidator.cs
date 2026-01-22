@@ -23,7 +23,9 @@ namespace RestaurantApi.Core.Application.Features.Dishes.Commands.CreateDish
             RuleFor(d => d.IngredientsIds)
                     .NotNull()
                     .NotEmpty()
-                    .WithMessage("Debe enviar al menos un id de ingrediente")
+                    .WithMessage("Debe enviar al menos un id de ingrediente");
+
+            RuleFor(d => d.IngredientsIds)
                     .Must(list => list.Distinct().Count() == list.Count)
                     .WithMessage("No se permiten ids de ingredientes duplicados")
                     .When(d => d.IngredientsIds != null && d.IngredientsIds.Any());
