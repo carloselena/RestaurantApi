@@ -7,7 +7,6 @@ using RestaurantApi.Core.Application.Features.Dishes.Commands.CreateDish;
 using RestaurantApi.Core.Application.Features.Dishes.Commands.UpdateDish;
 using RestaurantApi.Core.Application.Features.Dishes.Queries.GetAllDishes;
 using RestaurantApi.Core.Application.Features.Dishes.Queries.GetDishById;
-using RestaurantApi.Core.Application.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Mime;
 
@@ -30,10 +29,10 @@ namespace RestaurantApi.Controllers.v1
         public async Task<IActionResult> Get()
         {
             var response = await Mediator.Send(new GetAllDishesQuery());
-            if (!response.Succeeded)
+            if (response?.Data?.Count == 0)
                 return NoContent();
 
-            return Ok(response.Data);
+            return Ok(response?.Data);
         }
 
         [HttpGet("{id}")]
@@ -48,9 +47,6 @@ namespace RestaurantApi.Controllers.v1
         public async Task<IActionResult> Get([FromRoute] GetDishByIdQuery query)
         {
             var response = await Mediator.Send(query);
-            if (!response.Succeeded)
-                return NotFound();
-
             return Ok(response.Data);
         }
 
@@ -65,14 +61,11 @@ namespace RestaurantApi.Controllers.v1
         )]
         public async Task<IActionResult> Create([FromBody] CreateDishCommand createDishCommand)
         {
-            var result = await Mediator.Send(createDishCommand);
-            if (!result.Succeeded)
-                return BadRequest(result.Message);
-
-            return Ok(result.Data);
+            var response = await Mediator.Send(createDishCommand);
+            return StatusCode(StatusCodes.Status201Created, response.Data);
         }
 
-        [HttpPut]
+        [HttpPut("{id:int:min(1)}")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(UpdateDishDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -82,20 +75,10 @@ namespace RestaurantApi.Controllers.v1
             Summary = "Actualización de plato",
             Description = "Recibe las propiedades necesarias para actualizar un plato"
         )]
-        public async Task<IActionResult> Update([FromBody] UpdateDishCommand command)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateDishCommand command)
         {
-            try
-            {
-                var response = await Mediator.Send(command);
-                if (!response.Succeeded)
-                    return BadRequest(response.Errors);
-
-                return Ok(response.Data);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            var response = await Mediator.Send(command with { Id = id});
+            return Ok(response.Data);
         }
     }
 }
