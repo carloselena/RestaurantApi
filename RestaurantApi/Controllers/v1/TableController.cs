@@ -1,13 +1,12 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RestaurantApi.Core.Application.DTOs.Order;
-using RestaurantApi.Core.Application.DTOs.Table;
 using RestaurantApi.Core.Application.Enums;
 using RestaurantApi.Core.Application.Features.Orders.Queries.GetAllTableOrders;
 using RestaurantApi.Core.Application.Features.Tables.Commands.ChangeTableStatus;
 using RestaurantApi.Core.Application.Features.Tables.Commands.CreateTable;
 using RestaurantApi.Core.Application.Features.Tables.Commands.UpdateTable;
+using RestaurantApi.Core.Application.Features.Tables.Queries;
 using RestaurantApi.Core.Application.Features.Tables.Queries.GetAllTables;
 using RestaurantApi.Core.Application.Features.Tables.Queries.GetTableById;
 using Swashbuckle.AspNetCore.Annotations;
@@ -22,7 +21,7 @@ namespace RestaurantApi.Controllers.v1
 
         [Authorize(Roles = $"{nameof(Roles.ADMIN)}, {nameof(Roles.MESERO)}")]
         [HttpGet]
-        [ProducesResponseType(typeof(TableDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TableDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(
@@ -40,7 +39,7 @@ namespace RestaurantApi.Controllers.v1
 
         [Authorize(Roles = $"{nameof(Roles.ADMIN)}, {nameof(Roles.MESERO)}")]
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(TableDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TableDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -57,7 +56,7 @@ namespace RestaurantApi.Controllers.v1
         [Authorize(Roles = nameof(Roles.ADMIN))]
         [HttpPost]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(AddTableDTO), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(
@@ -73,7 +72,7 @@ namespace RestaurantApi.Controllers.v1
         [Authorize(Roles = nameof(Roles.ADMIN))]
         [HttpPut("{id:int:min(1)}")]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(UpdateTableDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -83,8 +82,8 @@ namespace RestaurantApi.Controllers.v1
         )]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateTableCommand command)
         {
-            var response = await Mediator.Send(command with { Id = id});
-            return Ok(response.Data);
+            await Mediator.Send(command with { Id = id});
+            return NoContent();
         }
 
         [Authorize(Roles = nameof(Roles.MESERO))]
@@ -101,14 +100,13 @@ namespace RestaurantApi.Controllers.v1
         public async Task<IActionResult> ChangeStatus([FromRoute] int id,
             [FromBody] ChangeTableStatusCommand command)
         {
-            var response = await Mediator.Send(command with { Id = id});
-            return Ok(response.Data);
+            await Mediator.Send(command with { Id = id});
+            return NoContent();
         }
         
         [Authorize(Roles = nameof(Roles.MESERO))]
         [HttpGet("{tableId}/orders")]
-        [ProducesResponseType(typeof(TableOrdersDTO), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(GetAllTableOrdersResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
