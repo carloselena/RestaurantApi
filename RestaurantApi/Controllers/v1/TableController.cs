@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using RestaurantApi.Core.Application.DTOs.Order;
 using RestaurantApi.Core.Application.DTOs.Table;
 using RestaurantApi.Core.Application.Enums;
+using RestaurantApi.Core.Application.Features.Orders.Queries.GetAllTableOrders;
 using RestaurantApi.Core.Application.Features.Tables.Commands.ChangeTableStatus;
 using RestaurantApi.Core.Application.Features.Tables.Commands.CreateTable;
 using RestaurantApi.Core.Application.Features.Tables.Commands.UpdateTable;
 using RestaurantApi.Core.Application.Features.Tables.Queries.GetAllTables;
 using RestaurantApi.Core.Application.Features.Tables.Queries.GetTableById;
-using RestaurantApi.Core.Application.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Mime;
 
@@ -19,14 +19,6 @@ namespace RestaurantApi.Controllers.v1
     [SwaggerTag("Mantenimiento de mesas")]
     public class TableController : BaseApiController
     {
-        private readonly ITableService _tableService;
-        private readonly IOrderService _orderService;
-
-        public TableController(ITableService tableService, IOrderService orderService)
-        {
-            _tableService = tableService;
-            _orderService = orderService;
-        }
 
         [Authorize(Roles = $"{nameof(Roles.ADMIN)}, {nameof(Roles.MESERO)}")]
         [HttpGet]
@@ -40,10 +32,10 @@ namespace RestaurantApi.Controllers.v1
         public async Task<IActionResult> Get()
         {
             var response = await Mediator.Send(new GetAllTablesQuery());
-            if (!response.Succeeded)
+            if (response?.Data?.Count == 0)
                 return NoContent();
 
-            return Ok(response.Data);
+            return Ok(response?.Data);
         }
 
         [Authorize(Roles = $"{nameof(Roles.ADMIN)}, {nameof(Roles.MESERO)}")]
@@ -59,9 +51,6 @@ namespace RestaurantApi.Controllers.v1
         public async Task<IActionResult> Get([FromRoute] GetTableByIdQuery query)
         {
             var response = await Mediator.Send(query);
-            if (!response.Succeeded)
-                return NotFound();
-
             return Ok(response.Data);
         }
 
@@ -82,7 +71,7 @@ namespace RestaurantApi.Controllers.v1
         }
 
         [Authorize(Roles = nameof(Roles.ADMIN))]
-        [HttpPut]
+        [HttpPut("{id:int:min(1)}")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(UpdateTableDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -92,17 +81,14 @@ namespace RestaurantApi.Controllers.v1
             Summary = "Actualización de mesa",
             Description = "Recibe las propiedades necesarias para actualizar un ingrediente, solo se puede actualizar la descripción y la cantidad de personas para la que alcanza la mesa"
         )]
-        public async Task<IActionResult> Update([FromBody] UpdateTableCommand command)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateTableCommand command)
         {
-            var response = await Mediator.Send(command);
-            if (!response.Succeeded)
-                return NotFound();
-
+            var response = await Mediator.Send(command with { Id = id});
             return Ok(response.Data);
         }
 
         [Authorize(Roles = nameof(Roles.MESERO))]
-        [HttpPatch("{id}/status")]
+        [HttpPatch("{id:int:min(1)}/status")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -115,14 +101,10 @@ namespace RestaurantApi.Controllers.v1
         public async Task<IActionResult> ChangeStatus([FromRoute] int id,
             [FromBody] ChangeTableStatusCommand command)
         {
-            command.Id = id;
-            var response = await Mediator.Send(command);
-            if (!response.Succeeded)
-                return NotFound();
-
+            var response = await Mediator.Send(command with { Id = id});
             return Ok(response.Data);
         }
-
+        
         [Authorize(Roles = nameof(Roles.MESERO))]
         [HttpGet("{tableId}/orders")]
         [ProducesResponseType(typeof(TableOrdersDTO), StatusCodes.Status200OK)]
@@ -134,23 +116,10 @@ namespace RestaurantApi.Controllers.v1
             Summary = "Buscar órdenes de una mesa",
             Description = "Recibe el id de la mesa y devuelve un objeto con el id de la mesa y el listado de sus órdenes pendientes"
         )]
-        public async Task<IActionResult> GetTableOrders([FromRoute] int tableId)
+        public async Task<IActionResult> GetTableOrders([FromRoute] GetAllTableOrdersQuery query)
         {
-            if (tableId <= 0)
-                return BadRequest();
-
-            try
-            {
-                var tableOrders = await _orderService.GetAllTableOrders(tableId);
-                if (tableOrders.Orders == null || tableOrders.Orders.Count == 0)
-                    return NoContent();
-
-                return Ok(tableOrders);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            var response = await Mediator.Send(query);
+            return Ok(response.Data);
         }
     }
 }
