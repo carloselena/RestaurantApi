@@ -19,13 +19,11 @@ namespace RestaurantApi.Core.Application.Features.Dishes.Queries.GetAllDishes
         public async Task<Response<List<DishDto>>> Handle(GetAllDishesQuery request, CancellationToken cancellationToken)
         {
             var dishes = await _dishRepository
-                                .GetAllAsync(q => q.Include(d => d.Ingredients)
+                                .GetAllAsync(q => q.Include(d => d.Ingredients)!
                                                     .ThenInclude(di => di.Ingredient));
-            if (dishes == null || dishes.Count == 0)
-                return Response<List<DishDto>>.Fail("No hay platos");
 
-            var response = _mapper.Map<List<DishDto>>(dishes);
-            return Response<List<DishDto>>.Success(response);
+            var response = _mapper.Map<List<DishDto>>(dishes ?? []);
+            return new Response<List<DishDto>>(response)!;
         }
     }
 }

@@ -21,7 +21,7 @@ namespace RestaurantApi.Core.Application.Features.Ingredients.Commands.CreateIng
             var ingredient = _mapper.Map<Ingredient>(request);
             ingredient = await _ingredientRepository.AddAsync(ingredient);
             var response = _mapper.Map<SaveIngredientResponse>(ingredient);
-            return Response<SaveIngredientResponse>.Success(response);
+            return new Response<SaveIngredientResponse>(response)!;
         }
     }
 }

@@ -1,23 +1,21 @@
-﻿using RestaurantApi.Core.Application.Interfaces.Repositories;
+﻿using RestaurantApi.Core.Application.Exceptions;
+using RestaurantApi.Core.Application.Interfaces.Repositories;
 using RestaurantApi.Core.Domain.Entities;
 
 namespace RestaurantApi.Core.Application.Features.Dishes.Commands
 {
     public static class DishValidation
     {
-        public static async Task<bool> ValidateIngredients(List<int> ingredientsIds, IIngredientRepository ingredientRepository)
+        public static async Task ValidateIngredients(IReadOnlyCollection<int> ingredientsIds, IIngredientRepository ingredientRepository)
         {
             var ingredientsDB = await ingredientRepository.GetAllAsync();
             ingredientsDB = ingredientsDB.Where(i => ingredientsIds.Contains(i.Id)).ToList();
 
             if (ingredientsDB.Count != ingredientsIds.Count)
-                return false;
-                //throw new ApiException("Debe asegurarse de que los ingredientes existan", (int)HttpStatusCode.BadRequest);
-
-            return true;
+                throw new ValidationErrorException("Debe asegurarse de que los ingredientes existan");
         }
 
-        public static void SyncIngredients(Dish dish, List<int> newIngredientsIds)
+        public static void SyncIngredients(Dish dish, IReadOnlyCollection<int> newIngredientsIds)
         {
             var currentIds = dish.Ingredients.Select(di => di.IngredientId).ToList();
 

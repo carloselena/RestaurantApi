@@ -57,6 +57,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSwaggerExtension();
+app.UseErrorHandlerMiddleware();
 
 app.UseHealthChecks("/health");
 

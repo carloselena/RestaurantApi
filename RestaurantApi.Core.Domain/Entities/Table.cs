@@ -7,6 +7,6 @@ namespace RestaurantApi.Core.Domain.Entities
         public string Description { get; set; }
         public int MaxPeopleOnTable { get; set; }
         public string Status { get; set; }
-        public ICollection<Order>? Orders { get; set; }
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

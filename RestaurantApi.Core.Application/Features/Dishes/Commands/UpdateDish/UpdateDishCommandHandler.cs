@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using RestaurantApi.Core.Application.Exceptions;
 using RestaurantApi.Core.Application.Interfaces.Repositories;
 using RestaurantApi.Core.Application.Wrappers;
 
@@ -18,21 +19,19 @@ namespace RestaurantApi.Core.Application.Features.Dishes.Commands.UpdateDish
         }
         public async Task<Response<int>> Handle(UpdateDishCommand request, CancellationToken cancellationToken)
         {
-            var ingredientsCorrect = await DishValidation.ValidateIngredients(request.IngredientsIds, _ingredientRepository);
-            if (!ingredientsCorrect)
-                return Response<int>.Fail("Debe asegurarse de que todos los ingredientes existan");
-
+            await DishValidation.ValidateIngredients(request.IngredientsIds, _ingredientRepository);
+            
             var dish = await _dishRepository.GetByIdAsync(request.Id, q => q.Include(d => d.Ingredients));
 
             if (dish == null)
-                throw new KeyNotFoundException($"No hay plato con id {request.Id}");
+                throw new NotFoundException($"No se encontró el plato con id {request.Id}");
 
             dish.Price = request.Price;
 
             DishValidation.SyncIngredients(dish, request.IngredientsIds);
 
-            dish = await _dishRepository.UpdateAsync(dish);
-            return Response<int>.Success(dish.Id);
+            await _dishRepository.UpdateAsync(dish);
+            return new Response<int>(dish.Id);
         }
     }
 }

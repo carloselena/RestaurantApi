@@ -9,6 +9,6 @@ namespace RestaurantApi.Core.Domain.Entities
         public string Status { get; set; }
 
         public Table? Table { get; set; }
-        public ICollection<OrderDishes>? Dishes { get; set; }
+        public ICollection<OrderDishes> Dishes { get; set; } = new List<OrderDishes>();
     }
 }

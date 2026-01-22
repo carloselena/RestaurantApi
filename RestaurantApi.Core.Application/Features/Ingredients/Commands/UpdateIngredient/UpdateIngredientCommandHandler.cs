@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using RestaurantApi.Core.Application.Exceptions;
 using RestaurantApi.Core.Application.Interfaces.Repositories;
 using RestaurantApi.Core.Application.Wrappers;
 
@@ -19,12 +20,12 @@ namespace RestaurantApi.Core.Application.Features.Ingredients.Commands.UpdateIng
         {
             var ingredient = await _ingredientRepository.GetByIdAsync(request.Id);
             if (ingredient == null)
-                return Response<SaveIngredientResponse>.Fail($"No hay ingrediente con id {request.Id}");
+                throw new NotFoundException($"No se encontró ingrediente con id {request.Id}");
 
             _mapper.Map(request, ingredient);
             await _ingredientRepository.UpdateAsync(ingredient);
             var response = _mapper.Map<SaveIngredientResponse>(ingredient);
-            return Response<SaveIngredientResponse>.Success(response);
+            return new Response<SaveIngredientResponse>(response)!;
         }
     }
 }

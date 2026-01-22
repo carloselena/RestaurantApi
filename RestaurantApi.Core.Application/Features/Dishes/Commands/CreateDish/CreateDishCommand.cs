@@ -4,12 +4,11 @@ using RestaurantApi.Core.Application.Wrappers;
 
 namespace RestaurantApi.Core.Application.Features.Dishes.Commands.CreateDish
 {
-    public class CreateDishCommand : IRequest<Response<int>>
-    {
-        public string Name { get; set; }
-        public double Price { get; set; }
-        public int EnoughFor { get; set; }
-        public DishCategories Category { get; set; }
-        public List<int> IngredientsIds { get; set; }
-    }
+    public record CreateDishCommand(
+        string Name,
+        double Price,
+        int EnoughFor,
+        DishCategories Category,
+        IReadOnlyCollection<int> IngredientsIds
+    ) : IRequest<Response<int>>;
 }

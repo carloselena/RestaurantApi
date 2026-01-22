@@ -30,10 +30,10 @@ namespace RestaurantApi.Controllers.v1
         public async Task<IActionResult> Get()
         {
             var response = await Mediator.Send(new GetAllIngredientsQuery());
-            if (!response.Succeeded)
+            if (response?.Data?.Count == 0)
                 return NoContent();
 
-            return Ok(response.Data);
+            return Ok(response!.Data);
         }
 
         [HttpGet("{id}")]
@@ -48,9 +48,6 @@ namespace RestaurantApi.Controllers.v1
         public async Task<IActionResult> Get([FromRoute] GetIngredientByIdQuery query)
         {
             var response = await Mediator.Send(query);
-            if (!response.Succeeded)
-                return NotFound(response.Message);
-
             return Ok(response.Data);
         }
 
@@ -66,10 +63,10 @@ namespace RestaurantApi.Controllers.v1
         public async Task<IActionResult> Create([FromBody] CreateIngredientCommand command)
         {
             var response = await Mediator.Send(command);
-            return StatusCode(StatusCodes.Status201Created, response.Data);
+            return StatusCode(StatusCodes.Status201Created, response.Data!.Id);
         }
 
-        [HttpPut]
+        [HttpPut("{id:int:min(1)}")]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(SaveIngredientDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -79,12 +76,9 @@ namespace RestaurantApi.Controllers.v1
             Summary = "Actualización de ingrediente",
             Description = "Recibe las propiedades necesarias para actualizar un ingrediente"
         )]
-        public async Task<IActionResult> Update([FromBody] UpdateIngredientCommand command)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateIngredientCommand command)
         {
-            var response = await Mediator.Send(command);
-            if (!response.Succeeded)
-                return NotFound(response.Message);
-
+            var response = await Mediator.Send(command with { Id = id});
             return Ok(response.Data);
         }
     }

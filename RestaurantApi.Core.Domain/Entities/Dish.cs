@@ -8,6 +8,6 @@ namespace RestaurantApi.Core.Domain.Entities
         public double Price { get; set; }
         public int MaxPeopleQuantity { get; set; }
         public string Category { get; set; }
-        public ICollection<DishIngredients>? Ingredients { get; set; }
+        public ICollection<DishIngredients> Ingredients { get; set; } = new List<DishIngredients>();
     }
 }
