@@ -1,7 +1,7 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RestaurantApi.Core.Application.DTOs.Order;
+using Restaurant.Core.Application.Features.Orders.Queries;
 using RestaurantApi.Core.Application.Enums;
 using RestaurantApi.Core.Application.Features.Orders.Commands.ChangeOrderStatus;
 using RestaurantApi.Core.Application.Features.Orders.Commands.CreateOrder;
@@ -21,7 +21,7 @@ namespace RestaurantApi.Controllers.v1
     {
 
         [HttpGet]
-        [ProducesResponseType(typeof(OrderDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(
@@ -38,7 +38,7 @@ namespace RestaurantApi.Controllers.v1
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(OrderDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -54,7 +54,7 @@ namespace RestaurantApi.Controllers.v1
 
         [HttpPost]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(AddOrderDTO), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -70,7 +70,7 @@ namespace RestaurantApi.Controllers.v1
 
         [HttpPut("{id:int:min(1)}")]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(UpdateOrderDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -81,7 +81,7 @@ namespace RestaurantApi.Controllers.v1
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateOrderCommand command)
         {
             var response = await Mediator.Send(command with { Id = id});
-            return Ok(response.Data);
+            return NoContent();
         }
 
         [HttpPatch("{id}/status")]

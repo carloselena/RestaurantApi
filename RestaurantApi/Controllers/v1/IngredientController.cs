@@ -1,7 +1,6 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RestaurantApi.Core.Application.DTOs.Ingredient;
 using RestaurantApi.Core.Application.Enums;
 using RestaurantApi.Core.Application.Features.Ingredients.Commands.CreateIngredient;
 using RestaurantApi.Core.Application.Features.Ingredients.Commands.UpdateIngredient;
@@ -53,7 +52,7 @@ namespace RestaurantApi.Controllers.v1
 
         [HttpPost]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(SaveIngredientDTO), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(
@@ -68,7 +67,7 @@ namespace RestaurantApi.Controllers.v1
 
         [HttpPut("{id:int:min(1)}")]
         [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(SaveIngredientDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -79,7 +78,7 @@ namespace RestaurantApi.Controllers.v1
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateIngredientCommand command)
         {
             var response = await Mediator.Send(command with { Id = id});
-            return Ok(response.Data);
+            return NoContent();
         }
     }
 }
