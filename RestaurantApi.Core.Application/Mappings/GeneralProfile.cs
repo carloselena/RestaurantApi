@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Restaurant.Core.Application.Features.Orders.Queries;
 using RestaurantApi.Core.Application.DTOs.Dish;
 using RestaurantApi.Core.Application.DTOs.Ingredient;
 using RestaurantApi.Core.Application.DTOs.Order;
@@ -10,6 +11,8 @@ using RestaurantApi.Core.Application.Features.Ingredients.Commands;
 using RestaurantApi.Core.Application.Features.Ingredients.Commands.CreateIngredient;
 using RestaurantApi.Core.Application.Features.Ingredients.Commands.UpdateIngredient;
 using RestaurantApi.Core.Application.Features.Ingredients.Queries;
+using RestaurantApi.Core.Application.Features.Orders.Commands.CreateOrder;
+using RestaurantApi.Core.Application.Features.Orders.Commands.UpdateOrder;
 using RestaurantApi.Core.Application.Features.Tables.Commands.ChangeTableStatus;
 using RestaurantApi.Core.Application.Features.Tables.Commands.CreateTable;
 using RestaurantApi.Core.Application.Features.Tables.Commands.UpdateTable;
@@ -81,6 +84,7 @@ namespace RestaurantApi.Core.Application.Mappings
                 .ForMember(dto => dto.DishesIds, opt => opt.MapFrom(src => src.Dishes.Select(od => od.DishId)))
                 .ReverseMap();
             #endregion
+
             #endregion
 
             #region CQRS
@@ -112,7 +116,7 @@ namespace RestaurantApi.Core.Application.Mappings
 
             #region Table
             CreateMap<CreateTableCommand, Table>()
-                .ForMember(t => t.Status, opt => opt.MapFrom(cmd => cmd.Status.ToString()));
+                .ForMember(t => t.Status, opt => opt.MapFrom(_ => TableStatus.DISPONIBLE.ToString()));
 
             CreateMap<UpdateTableCommand, Table>();
 
@@ -121,6 +125,26 @@ namespace RestaurantApi.Core.Application.Mappings
             CreateMap<Table, TableDto>()
                 .ForMember(dto => dto.Status, opt => opt.MapFrom(src => Enum.Parse<TableStatus>(src.Status)));
             #endregion
+
+            #region Order
+            CreateMap<CreateOrderCommand, Order>()
+                .ForMember(o => o.Status, opt => opt.MapFrom(_ => OrderStatus.EN_PROCESO.ToString()))
+                .ForMember(o => o.Dishes,
+                           opt => opt.MapFrom(cmd =>
+                           cmd.DishesIds.Select(id =>
+                           new OrderDishes { DishId = id})));
+
+            CreateMap<UpdateOrderCommand, Order>()
+                .ForMember(o => o.Dishes,
+                            opt => opt.MapFrom(cmd =>
+                            cmd.DishesIds.Select(id =>
+                            new OrderDishes { DishId = id })));
+
+            CreateMap<Order, OrderDto>()
+                .ForMember(dto => dto.Status, opt => opt.MapFrom(src => Enum.Parse<OrderStatus>(src.Status)))
+                .ForMember(dto => dto.Dishes, opt => opt.MapFrom(src => src.Dishes.Select(od => od.Dish)));
+            #endregion
+
             #endregion
 
         }
