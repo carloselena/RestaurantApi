@@ -1,4 +1,5 @@
-﻿using Swashbuckle.AspNetCore.SwaggerUI;
+﻿using RestaurantApi.Middlewares;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace RestaurantApi.Extensions
 {
@@ -11,6 +12,11 @@ namespace RestaurantApi.Extensions
             {
                 opt.SwaggerEndpoint("/swagger/v1/swagger.json", "Restaurant API");
             });
+        }
+
+        public static void UseErrorHandlerMiddleware(this IApplicationBuilder app)
+        {
+            app.UseMiddleware<ErrorHandlerMiddleware>();
         }
     }
 }
