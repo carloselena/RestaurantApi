@@ -3,7 +3,6 @@ using MediatR;
 using RestaurantApi.Core.Application.Interfaces.Repositories;
 using RestaurantApi.Core.Application.Wrappers;
 using RestaurantApi.Core.Domain.Entities;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace RestaurantApi.Core.Application.Features.Tables.Commands.CreateTable
 {
@@ -17,12 +16,12 @@ namespace RestaurantApi.Core.Application.Features.Tables.Commands.CreateTable
             _tableRepository = tableRepository;
             _mapper = mapper;
         }
-        public async Task<Response<int>> Handle(CreateTableCommand command, CancellationToken cancellationToken)
+        public async Task<Response<int>> Handle(CreateTableCommand request, CancellationToken cancellationToken)
         {
-            var table = _mapper.Map<Table>(command);
+            var table = _mapper.Map<Table>(request);
             table = await _tableRepository.AddAsync(table);
 
-            return Response<int>.Success(table.Id);
+            return new Response<int>(table.Id);
         }
     }
 }

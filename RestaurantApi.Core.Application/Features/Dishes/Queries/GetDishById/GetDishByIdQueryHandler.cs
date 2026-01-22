@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using RestaurantApi.Core.Application.Exceptions;
 using RestaurantApi.Core.Application.Interfaces.Repositories;
 using RestaurantApi.Core.Application.Wrappers;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace RestaurantApi.Core.Application.Features.Dishes.Queries.GetDishById
 {
@@ -21,13 +21,13 @@ namespace RestaurantApi.Core.Application.Features.Dishes.Queries.GetDishById
         public async Task<Response<DishDto>> Handle(GetDishByIdQuery request, CancellationToken cancellationToken)
         {
             var dish = await _dishRepository
-                              .GetByIdAsync(request.Id, q => q.Include(d => d.Ingredients)
+                              .GetByIdAsync(request.Id, q => q.Include(d => d.Ingredients)!
                                                             .ThenInclude(di => di.Ingredient));
             if (dish == null)
-                return Response<DishDto>.Fail($"No existe plato con id {request.Id}");
+                throw new NotFoundException($"No se encontró el plato con id {request.Id}");
 
             var response = _mapper.Map<DishDto>(dish);
-            return Response<DishDto>.Success(response);
+            return new Response<DishDto>(response)!;
         }
     }
 }

@@ -18,11 +18,9 @@ namespace RestaurantApi.Core.Application.Features.Tables.Queries.GetAllTables
         public async Task<Response<List<TableDto>>> Handle(GetAllTablesQuery request, CancellationToken cancellationToken)
         {
             var tables = await _tableRepository.GetAllAsync();
-            if (tables == null || tables.Count == 0)
-                return Response<List<TableDto>>.Fail("No hay mesas");
 
-            var response = _mapper.Map<List<TableDto>>(tables);
-            return Response<List<TableDto>>.Success(response);
+            var response = _mapper.Map<List<TableDto>>(tables ?? []);
+            return new Response<List<TableDto>>(response)!;
         }
     }
 }

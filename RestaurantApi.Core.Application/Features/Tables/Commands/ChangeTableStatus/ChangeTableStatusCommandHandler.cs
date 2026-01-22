@@ -1,31 +1,28 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
+using RestaurantApi.Core.Application.Exceptions;
 using RestaurantApi.Core.Application.Interfaces.Repositories;
 using RestaurantApi.Core.Application.Wrappers;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace RestaurantApi.Core.Application.Features.Tables.Commands.ChangeTableStatus
 {
     public class ChangeTableStatusCommandHandler : IRequestHandler<ChangeTableStatusCommand, Response<int>>
     {
         private readonly ITableRepository _tableRepository;
-        private readonly IMapper _mapper;
 
-        public ChangeTableStatusCommandHandler(ITableRepository tableRepository, IMapper mapper)
+        public ChangeTableStatusCommandHandler(ITableRepository tableRepository)
         {
             _tableRepository = tableRepository;
-            _mapper = mapper;
         }
-        public async Task<Response<int>> Handle(ChangeTableStatusCommand command, CancellationToken cancellationToken)
+        public async Task<Response<int>> Handle(ChangeTableStatusCommand request, CancellationToken cancellationToken)
         {
-            var table = await _tableRepository.GetByIdAsync(command.Id);
+            var table = await _tableRepository.GetByIdAsync(request.Id);
             if (table == null)
-                return Response<int>.Fail($"No hay mesa con id {command.Id}");
+                throw new NotFoundException($"No se encontró la mesa con id {request.Id}");
 
-            _mapper.Map(command, table);
+            table.Status = request.Status.ToString();
             await _tableRepository.UpdateAsync(table);
 
-            return Response<int>.Success(command.Id);
+            return new Response<int>(request.Id);
         }
     }
 }

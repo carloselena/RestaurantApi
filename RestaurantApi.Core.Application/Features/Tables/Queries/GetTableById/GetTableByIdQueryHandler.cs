@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using MediatR;
+using RestaurantApi.Core.Application.Exceptions;
 using RestaurantApi.Core.Application.Interfaces.Repositories;
 using RestaurantApi.Core.Application.Wrappers;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace RestaurantApi.Core.Application.Features.Tables.Queries.GetTableById
 {
@@ -20,10 +20,10 @@ namespace RestaurantApi.Core.Application.Features.Tables.Queries.GetTableById
         {
             var table = await _tableRepository.GetByIdAsync(request.Id);
             if (table == null)
-                return Response<TableDto>.Fail($"No hay mesa con id {request.Id}");
+                throw new NotFoundException($"No se encontró la mesa con id {request.Id}");
 
             var response = _mapper.Map<TableDto>(table);
-            return Response<TableDto>.Success(response);
+            return new Response<TableDto>(response)!;
         }
     }
 }

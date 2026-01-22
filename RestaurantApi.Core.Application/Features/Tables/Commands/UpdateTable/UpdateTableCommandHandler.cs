@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using RestaurantApi.Core.Application.Exceptions;
 using RestaurantApi.Core.Application.Interfaces.Repositories;
 using RestaurantApi.Core.Application.Wrappers;
 
@@ -15,16 +16,16 @@ namespace RestaurantApi.Core.Application.Features.Tables.Commands.UpdateTable
             _tableRepository = tableRepository;
             _mapper = mapper;
         }
-        public async Task<Response<int>> Handle(UpdateTableCommand command, CancellationToken cancellationToken)
+        public async Task<Response<int>> Handle(UpdateTableCommand request, CancellationToken cancellationToken)
         {
-            var table = await _tableRepository.GetByIdAsync(command.Id);
+            var table = await _tableRepository.GetByIdAsync(request.Id);
             if (table == null)
-                return Response<int>.Fail($"No hay mesa con id {command.Id}");
+                throw new NotFoundException($"No se encontró la mesa con id {request.Id}");
 
-            _mapper.Map(command, table);
-            table = await _tableRepository.UpdateAsync(table);
+            _mapper.Map(request, table);
+            await _tableRepository.UpdateAsync(table);
 
-            return Response<int>.Success(table.Id);
+            return new Response<int>(table.Id);
         }
     }
 }
