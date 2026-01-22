@@ -20,13 +20,11 @@ namespace RestaurantApi.Core.Application.Features.Dishes.Commands.CreateDish
         }
         public async Task<Response<int>> Handle(CreateDishCommand request, CancellationToken cancellationToken)
         {
-            var ingredientsCorrect = await DishValidation.ValidateIngredients(request.IngredientsIds, _ingredientRepository);
-            if (!ingredientsCorrect)
-                return Response<int>.Fail("Debe asegurarse de que todos los ingredientes existan");
+            await DishValidation.ValidateIngredients(request.IngredientsIds, _ingredientRepository);
 
             var dish = _mapper.Map<Dish>(request);
             dish = await _dishRepository.AddAsync(dish);
-            return Response<int>.Success(dish.Id);
+            return new Response<int>(dish.Id);
         }
     }
 }
